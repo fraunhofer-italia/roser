@@ -1,0 +1,45 @@
+rose_name: # Rose name
+  # dictionary of Roser Rose key-words
+  commands:
+    # dictionary of Rose commands definitions
+    rose_command_name:
+      # list of Petal commands, each one executes a specified command of a specified Petal  
+      - petal: petal_name # Petal name
+        command: petal_command_name # Petal command name to be executed
+        sleep: 1.0 # time to sleep before Petal command execution
+        # `condition`: optional argument. The Petal command will be launch only if the string 
+        # evaluated (after jinja substitution) using python eval() method returns true.
+        # Usually combined with argument with options.
+        condition: "'{{ petal_command_arg_with_options_name }}' == 'valid_value_1'"
+        args: 
+          # dictionary that specifies the Petal command arguments
+          # the arguments are defined in the Petal command definition
+          petal_command_arg_name: argument # argument name and argument of the specified Petal command
+          petal_command_arg_with_options_name: "{{ rose_command_arg_with_options_name }}"
+      ...
+      # Similarly to petals also roses can have arguments
+      args:
+        # dictionary that defines the Rose command arguments
+        # here can be defined the default arguments
+        # an argument to be correctly defined must have the relative template inside the subcommands
+        rose_command_arg_name: default_argument
+        # Arguments can be also defined with options using the following syntax.
+        rose_command_arg_with_options_name:
+          value: default_value
+          options: [valid_value_1, valid_value_2]
+
+  petals:
+    # dictionary of Petals required by the Rose
+    petal_name:
+      volumes:
+        # dictionary of Petal configurations
+        # the volumes can be of type, folder and list
+        # the volumes are defined in the Petal definition
+        folder_configuration: path_to_folder # can be absolute or relative to this roser file 
+        file_configuration: path_to_file # can be absolute or relative to this roser file 
+        list_configuration:
+          # list of paths to files or folders, all the paths can be absolute or relative to this roser file
+          - path_to_file
+          - path_to_folder
+          - path_to_file
+          - path_to_file

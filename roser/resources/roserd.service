@@ -1,0 +1,14 @@
+[Unit]
+Description=Roser
+After=network.target
+StartLimitIntervalSec=0
+
+[Service]
+User=$USER$
+WorkingDirectory=/home/$USER$
+RemainAfterExit=yes
+ExecStart=/usr/bin/bash -ic "python3 -m roser -ov --hidden --dir $FOLDER$ $PREFIX_ARG$"
+ExecStop=/usr/bin/bash -ic "python3 -m roser -ov --hidden --dir $FOLDER$ $PREFIX_ARG$ -c \"quit\""
+
+[Install]
+WantedBy=multi-user.target

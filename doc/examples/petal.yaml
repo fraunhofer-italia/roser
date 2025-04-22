@@ -1,0 +1,53 @@
+petal_name: # petal name
+  # - host: optional key if not provided assumed as False.
+  # Allow to specify if the petal has an associated container or not.
+  # If set to True commands will be run in host instead of inside the container.
+  host: True
+  # optional key for docker compose (default {workspace directory}/docker) 
+  docker-compose: path-to-file or path-to-folder (where to look for docker-compose.yml or docker-compose-nvidia.yml)
+  # dictionary of Roser Petal key-words
+  commands:
+    # dictionary of Petal commands definitions
+    petal_command_name:
+      description: command_description # it will be displayed by the help command
+      service_name: service_name # allows to specify the docker compose service on which the command will be executed
+      subcommands:
+        # list of bash commands to be executed inside the Petal container
+        # in case of only one command the list can be removed
+        - bash command
+        - bash command
+        - bash command arg:={{ petal_command_arg_name }}
+        - ["bash command", "service_name"] # allows to call different commands for different services, functionality available only if a 'build' PetalCommand
+      args:
+        # dictionary that defines the Petal command arguments
+        # here can be defined the default arguments
+        # an argument to be correctly defined must have the relative template inside the subcommands
+        petal_command_arg_name: default_argument # NB: in case of no default argument, it will be removed from the bash command call if not specified by the Rose
+        # Arguments can be also defined with options using the following syntax.
+        petal_command_arg_with_options_name:
+          value: default_value
+          options: [valid_value_1, valid_value_2]
+      kill: pkill -9 -f ros # Optional command key valid only if host is set to True. Allow to specify which command has to be executed to stop the host command.
+
+  volumes:
+    # dictionary of Petal volumes definitions
+    # each volume is defined by the type
+    # The possible types are:
+    # - file: requires a file destination and a file configuration in the Rose.
+    #         The content will be connected to the destination but the file name remains.
+    #         NB: the contents of the destination will not be accessible during the configuration
+    # - folder: requires a folder destination and a folder configuration in the Rose
+    #           It connects all the contents from the Rose configuration to the destination.
+    #           NB: does not overrides existing files or folders, error will be raised.
+    # - list: requires a folder destination and a list of file or folder configuration in the Rose
+    #         The list of files and folders will be connected inside the destination folder.
+    #         NB: does not overrides existing files or folders, error will be raised.
+    volume_name:
+      type: file # type of volume, explained above
+      destination: path_to_file # destination of the volume connection
+    volume_name2:
+      type: folder
+      destination: path_to_folder
+    volume_name3:
+      type: list
+      destination: path_to_folder

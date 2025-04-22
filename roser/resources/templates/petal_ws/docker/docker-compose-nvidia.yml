@@ -1,0 +1,11 @@
+version: "3.3"
+services:
+  {{ name }}:
+    extends:
+      file: docker-compose.yml
+      service: {{ name }}
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=all
+    runtime: nvidia
+    privileged: true

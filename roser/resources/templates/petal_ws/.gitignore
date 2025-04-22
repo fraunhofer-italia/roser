@@ -1,0 +1,8 @@
+__pycache__
+build/
+install/
+log/
+config/*
+!config/_example
+src/**
+!src/*.repos
