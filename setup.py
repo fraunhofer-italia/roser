@@ -16,19 +16,19 @@
 # Author: Marco Magri <marco.magri@fraunhofer.it>
 # Author: Carlo Morganti <carlo.morganti@fraunhofer.it>
 #
+import os
 import subprocess
+import sys
 
 from setuptools import find_packages, setup
+import sys
 
 
-def install_package(package_name):
+def run_shell_command(command: str):
     try:
-        # Construct the apt-get command with sudo
-        command = ["sudo", "apt-get", "install", "-y", package_name]
-
         # Run the command using subprocess
         completed_process = subprocess.run(
-            command, capture_output=True, text=True, check=True
+            command.split(" "), capture_output=True, text=True, check=True
         )
 
         # Print the output of the command
@@ -39,6 +39,10 @@ def install_package(package_name):
         # If the command fails, print the error message
         print("Error:", e.stderr)
         print("Return code:", e.returncode)
+
+
+def install_package(package_name: str):
+    run_shell_command(f"sudo apt-get install -y {package_name}")
 
 
 def is_package_installed(package_name):
@@ -54,6 +58,20 @@ def is_package_installed(package_name):
     except subprocess.CalledProcessError:
         return False
 
+
+def enable_mount():
+    username = os.environ["USER"]
+    sudoers_filename = f"/etc/sudoers.d/roser-{username}-mount"
+    if os.path.isfile(sudoers_filename):
+        return
+    run_shell_command(f"sudo touch {sudoers_filename}")
+    os.system(
+        f'echo "{username} ALL=(ALL) NOPASSWD: /bin/mount, /bin/umount, /usr/bin/mount, /usr/bin/umount" | sudo tee {sudoers_filename}'
+    )
+    run_shell_command(f"sudo chmod 440 {sudoers_filename}")
+
+
+enable_mount()
 
 for package in ["tmux", "wmctrl", "konsole"]:
     if not is_package_installed(package):
@@ -88,7 +106,7 @@ setup(
     maintainer="Marco Magri, Carlo Morganti",
     maintainer_email="marco.magri.dev@gmail.com, carloski@live.it",
     description="ROS docker workspace handler",
-    license='Apache License 2.0',
+    license="Apache License 2.0",
     include_package_data=True,
     entry_points={
         "console_scripts": [

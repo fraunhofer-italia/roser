@@ -22,7 +22,7 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any, List
 
-from ...utils import LOGGER
+from ...utils import LOGGER, RoserENV
 
 
 @dataclass
@@ -56,6 +56,7 @@ class Volume:
     input: Any = ""
 
     configurations: List[str] = field(default_factory=list)
+    created: List[str] = field(default_factory=list)
     unconfigured: List[str] = field(default_factory=list)
 
     @staticmethod
@@ -64,6 +65,7 @@ class Volume:
         unconfigured = []
         dirs_created = []
 
+        # File to file
         if (
             os.path.isfile(input)
             and not os.path.isdir(output)
@@ -79,6 +81,7 @@ class Volume:
                         f"Roser has not enough permissions to access file '{input}'. To be mounted must be writable by the user."
                     )
                 unconfigured.append(output)
+        # File to folder
         elif os.path.isfile(input) and os.path.isdir(output):
             file = os.path.join(output, os.path.basename(input))
             configurations.append(file)
@@ -91,54 +94,26 @@ class Volume:
                         f"Roser has not enough permissions to access file '{input}'. To be mounted must be writable by the user."
                     )
                 unconfigured.append(file)
+        # Folder to folder
         elif os.path.isdir(input) and os.path.isdir(output):
             dest_subfolder = output
             if only_contents:
-                configurations += [
-                    os.path.join(output, file) for file in os.listdir(input)
-                ]
+                configurations += [dest_subfolder]
             else:
                 dest_subfolder = os.path.join(output, os.path.basename(input))
                 configurations.append(dest_subfolder)
+                dirs_created.append(dest_subfolder)
                 try:
                     os.makedirs(dest_subfolder)
                 except FileExistsError:
                     unconfigured.append(dest_subfolder)
                     LOGGER.error(f"Failed to link {dest_subfolder}")
-                    return (configurations, unconfigured)
+                    return (configurations, unconfigured, dirs_created)
 
-            dirs_created.append(dest_subfolder)
-            failed = False
-            for root, _, files in os.walk(input):
-                for filename in files:
-                    src_path = os.path.join(root, filename)
-                    dest_path = os.path.join(
-                        dest_subfolder, os.path.relpath(src_path, input)
-                    )
-                    dest_dir = os.path.dirname(dest_path)
-                    if not dest_dir in dirs_created:
-                        try:
-                            dirs_created.append(dest_dir)
-                            os.makedirs(dest_dir)
-                        except FileExistsError:
-                            if only_contents and dest_dir in configurations:
-                                unconfigured.append(dest_dir)
-                            LOGGER.error(f"Failed to create folder {dest_dir}")
-                            failed = True
-                    try:
-                        os.link(src_path, dest_path)
-                    except OSError as e:
-                        if only_contents and dest_path in configurations:
-                            unconfigured.append(dest_path)
-                        LOGGER.error(f"Failed to link {dest_path}")
-                        if not os.access(src_path, os.W_OK):
-                            LOGGER.error(
-                                f"Roser has not enought permissions to access file '{src_path}'. To be mounted must be writable by the user."
-                            )
-                        failed = True
-            if failed and not only_contents:
+            if os.system(
+                f"sudo mount -t overlay overlay  -o x-gvfs-hide -o lowerdir={dest_subfolder},upperdir={input},workdir={RoserENV.ROSER_DIR} {dest_subfolder}"
+            ):
                 unconfigured.append(dest_subfolder)
-                LOGGER.error(f"Failed to link {dest_subfolder}")
         else:
             if not os.path.exists(input):
                 LOGGER.error(
@@ -159,17 +134,18 @@ class Volume:
                     f"Input type: {input_type} - Output type: {output_type} "
                 )
 
-        return (configurations, unconfigured)
+        return (configurations, unconfigured, dirs_created)
 
     def mount(self):
         self.configurations = []
         self.unconfigured = []
+        self.created = []
         if (
             self.type in [Volume.Type.FILE, Volume.Type.FOLDER]
             and isinstance(self.input, str)
             and (os.path.isfile(self.input) or os.path.isdir(self.input))
         ):
-            self.configurations, self.unconfigured = Volume._link(
+            self.configurations, self.unconfigured, self.created = Volume._link(
                 self.input, self.output, only_contents=True
             )
         elif (
@@ -182,6 +158,7 @@ class Volume:
                 result = Volume._link(element, self.output, only_contents=False)
                 self.configurations += result[0]
                 self.unconfigured += result[1]
+                self.created += result[2]
         else:
             if self.input == "":
                 LOGGER.warning(
@@ -202,4 +179,6 @@ class Volume:
                 if os.path.isfile(configuration):
                     os.remove(configuration)
                 elif os.path.isdir(configuration):
-                    shutil.rmtree(configuration)
+                    os.system(f"sudo umount {configuration}")
+                    if configuration in self.created:
+                        shutil.rmtree(configuration)

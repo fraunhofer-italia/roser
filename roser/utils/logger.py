@@ -57,12 +57,10 @@ formatter = colorlog.ColoredFormatter(
 )
 
 # Create a handler for file and set the formatter
-log_file_path = os.path.expanduser(RoserENV.ROSER_LOG)
-if not os.path.exists(os.path.dirname(log_file_path)):
-    os.makedirs(os.path.dirname(log_file_path))
-
 file_handler = RotatingFileHandler(
-    os.path.expanduser(RoserENV.ROSER_LOG), maxBytes=5 * 1024 * 1024, backupCount=5
+    os.path.join(RoserENV.ROSER_DIR, ".log"),
+    maxBytes=5 * 1024 * 1024,
+    backupCount=5,
 )
 file_handler.setFormatter(formatter)
 

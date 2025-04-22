@@ -103,6 +103,9 @@ def main():
     known_args, _ = parser.parse_known_args()
     known_args = vars(known_args)
 
+    if not os.path.exists(RoserENV.ROSER_DIR):
+        os.makedirs(RoserENV.ROSER_DIR)
+
     roserbud_session = None
     for session in TMUX_HANDLER.server.sessions:
         if session.name == "roser/bud":

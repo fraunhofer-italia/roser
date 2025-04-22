@@ -60,9 +60,11 @@ class RoserENV:
         f"Allow to specify the Roser branch", "ROSER_BRANCH", str, ""
     )
 
-    ROSER_LOG: str = get_env(
-        f"Allow to specify the directory of the roser file",
-        "ROSER_DIR",
-        str,
-        "~/.roser/.log",
+    ROSER_DIR: str = os.path.expanduser(
+        get_env(
+            f"Allow to specify the directory of the roser file",
+            "ROSER_DIR",
+            str,
+            "~/.roser",
+        )
     )
