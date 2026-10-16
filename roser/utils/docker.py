@@ -203,7 +203,7 @@ class DockerComposeService:
     def get_dockerfile_from_build_parsing(
         path: str, build: Dict[str, Any]
     ) -> Tuple[str, str]:
-        if build.keys() == 0:
+        if len(build) == 0:
             return None, None
         context = "Parsing 'build' field"
         dockerfile_context = get_dict_value(
