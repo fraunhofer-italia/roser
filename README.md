@@ -2,9 +2,19 @@
 
 ## Description :scroll:
 
-**Roser** aims to help **users** and even more **developers** to **manage**, **use** and **create** applications. It creates a **simplified** command line architecture, thanks to the powerful and user friendly **shortcuts**, and allows smart handling of multiple terminals.\
-To do so we based our approach on the modular logic coming from **Docker** containers and we created a **standardized way of developing** complex ROS software architectures into simplified interfaces for reconfigurable tools.\
-This package complies with the **modular approach** and it allows to manage complex **ROS systems** in a user-friendly framework, composed by **Roses** and **Petals**. **Petals** are a general purpose or hardware related software tools that constitute the core functionalities (e.g. ROS workspaces); **Roses** are a higher level managers of different **Petals**, other **Roses** or a composition of them (e.g the [Concert Project](https://concertproject.eu/)).
+
+**Roser** makes complex, container-based projects easy to run and reproduce. Built for ROS but suited to any Docker setup, it clones and builds your system from reusable containers, called **Petals**, and combines them into projects, called **Roses**, all defined in plain YAML configs. You build, launch and stop everything from one interactive shell with autocompletion, while each process runs in its own terminal that you can kill or reattach at any time.
+
+**Petals** are a general purpose or hardware related software tools that constitute the core functionalities (e.g. ROS workspaces); **Roses** are a higher level managers of different **Petals**, other **Roses** or a composition of them (e.g the [CONCERT Project](https://concertproject.eu/)).
+
+
+This package’s most important features:
+
+* **One CLI.** Build, launch and control everything from one autocompleting shell.
+* **Reusable building blocks.** Combine ready-made tool containers into projects with plain YAML config files.
+* **Every terminal under control.** Each process gets its own window, which you can kill or reattach whenever you like from the main CLI.
+* **Reproducible setups.** Freeze every repo at its exact commit and restore it on any machine.
+
 
 ## Installation :wrench:
 
@@ -20,8 +30,8 @@ pip install -U git+https://github.com/fraunhofer-italia/roser.git
 
 ## Configuration :gear:
 
-The Roser configuration, so Roses and Petals (respectively Projects and Tools) definitions are based on Yaml files. In particular, they both are defined by the presence of the ``roser.yaml`` file. \
-You can find an example of a ``roser.yaml`` file for a **Rose** here ([doc/examples/rose.yaml](doc/examples/rose.yaml)), and an example of a ``roser.yaml`` file for a **Petal** here ([doc/examples/petal.yaml](doc/examples/petal.yaml)).
+
+The Roser configuration, so Roses and Petals (respectively Projects and Tools) definitions are based on Yaml files. In particular, they both are defined by the presence of the `roser.yaml` file. You can find an example of a `roser.yaml` file for a **Rose** here ([doc/examples/rose.yaml](doc/examples/rose.yaml)), and an example of a `roser.yaml` file for a **Petal** here ([doc/examples/petal.yaml](doc/examples/petal.yaml)).
 
 To work properly with the Roser system both Roses and Petals must comply with a predefined structure. Their required constraints and the suggestions for good use are listed here below.
 
@@ -32,12 +42,12 @@ To work properly with the Roser system both Roses and Petals must comply with a 
 ## Usage :toolbox:
 
 Roser offers a Python CLI composed by default and user defined commands.
-To start Roser you need to navigate inside a Rose or Petal folder and then run the command ``roser``.
+To start Roser you need to navigate inside a Rose or Petal folder and then run the command `roser`.
 
 The startup will be followed by:
 
-- turning the terminal where the command ``roser`` was launched into a Python CLI. This is the **Roser Bud**, here you have access to the Rose and Petal commands.
-- opening of an always on top terminal, a **Roser Hip**. In particular, this one is called **Roser Petals**, the Petal commands outputs will be displayed here.
+* turning the terminal where the command `roser` was launched into a Python CLI. This is the **Roser Bud**, here you have access to the Rose and Petal commands.
+* opening of an always on top terminal, a **Roser Hip**. In particular, this one is called **Roser Petals**, the Petal commands outputs will be displayed here.
 
 ### [Roser Options](doc/usage/roser_options.md#roser-options)
 
@@ -51,30 +61,33 @@ The startup will be followed by:
 
 Package Manager Dependencies:
 
-- **Docker** (and Docker Compose) v20.10.22
-- **Git** v2.34.1
-- **Tmux** v3.2a
-- **Code** latest-version(1.84.2) ([update](https://askubuntu.com/questions/833448/how-can-i-update-visual-studio-code-on-ubuntu))
+* **Docker** (and Docker Compose) v20.10.22
+* **Git** v2.34.1
+* **Tmux** v3.2a
+* **Code** latest-version(1.84.2) ([update](https://askubuntu.com/questions/833448/how-can-i-update-visual-studio-code-on-ubuntu))
 
 Python Dependencies:
 
-- **docker** v6.1.3
-- **pyfiglet** v0.8.post1
-- **libtmux** v0.22.1
-- **colorlog** v6.7.0
-- **vcstool** v0.3.0
-- **pexpect** v4.8.0
+* **docker** v6.1.3
+* **pyfiglet** v0.8.post1
+* **libtmux** v0.22.1
+* **colorlog** v6.7.0
+* **vcstool** v0.3.0
+* **pexpect** v4.8.0
 
---- 
 
 ### Licence
 
 ROSER is licensed under the terms of the Apache License 2.0. The project has received financial support by the Horizon 2020 EU Project [CONCERT](https://concertproject.eu/).
 
-**Authors**: 
-  - Carlo Morganti
-  - Marco Magri
+**Authors**:
 
-**Maintainers**: 
-  - [Carlo Morganti](carloski@live.it)
-  - [Marco Magri](marco.magri.dev@gmail.com)
+* Carlo Morganti
+* Marco Magri
+
+**Maintainers**:
+
+* [Carlo Morganti](carloski@live.it)
+* [Marco Magri](marco.magri.dev@gmail.com)
+
+
